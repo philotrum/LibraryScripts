@@ -26,7 +26,7 @@ def DrawHist(inFig, inPos, inData, inNumBins = 100, inXLabel = '',
             inXMin:     The y axis maximum
 
         If inXMin == NA then the x axis won't be scaled.
-        If iYXMin == NA then the y axis won't be scaled.
+        If inYMin == NA then the y axis won't be scaled.
 
         Returns the axis that has just been added.
     """
