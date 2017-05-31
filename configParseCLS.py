@@ -1,5 +1,10 @@
 #!/user/bin/env python
 
+# Written by G. Kettlewell in May 2017
+# This is a minimal configuration file handler. I wrote this because
+# the library config parser that is available is over featured for
+# what I need, and imports a very large amount of unrequired code.
+
 import os
 
 class configFileParseCLS():
