@@ -95,7 +95,12 @@ class configFileParseCLS():
         # Find the setting
         for obj in self._mSettings:
             if (inKey == obj.key):
-                return bool(obj.val)
+                if (obj.val == 'True'):
+                    return True
+                elif (obj.val == 'False'):
+                    return False
+                else:
+                    assert(False)
 
         assert(False)
     
@@ -105,7 +110,7 @@ class configFileParseCLS():
         
         lines = [line.rstrip('\n') for line in open(self._mConfigFileName)]     
         for line in lines:
-            tmp = line.split(':')
+            tmp = line.split(',')
             tmpSetting = _settingCLS(tmp[0].strip(), tmp[1].strip())
             self._mSettings.append(tmpSetting)
             
@@ -117,7 +122,7 @@ class configFileParseCLS():
         
         outs = open(self._mConfigFileName, 'w')
         for obj in self._mSettings:
-            outs.write(obj.key + ' : ' + str(obj.val) + '\n')
+            outs.write(obj.key + ' , ' + str(obj.val) + '\n')
             
         outs.close
 

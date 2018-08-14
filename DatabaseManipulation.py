@@ -21,7 +21,7 @@ def NumTables(inDatabaseName):
     cur = con.cursor()
     cur.execute(selectSTR)
     tableNames = cur.fetchall()
-    print tableNames
+    print(tableNames)
     return len(tableNames)
 
 
