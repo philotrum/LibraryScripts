@@ -72,8 +72,8 @@ class SZA_Calc:
         utcSunrise = self._mObs.previous_rising(eph.Sun(), dateStr).datetime()
         utcSunset = self._mObs.next_setting(eph.Sun(), dateStr).datetime()
 
-        localSunrise = utcSunrise + timedelta(hours=10)
-        localSunset = utcSunset + timedelta(hours=10)
+        localSunrise = utcSunrise + timedelta(hours=self._mTimezone)
+        localSunset = utcSunset + timedelta(hours=self._mTimezone)
 
         localSunriseStr = localSunrise.strftime('%H:%M:%S')
         localSunsetStr = localSunset.strftime('%H:%M:%S')
