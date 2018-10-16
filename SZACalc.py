@@ -42,7 +42,7 @@ class SZA_Calc:
         
         self._mObs.date = timeStr
         sun = eph.Sun()
-        # Call this to set the ephem object up correclty
+        # Call this to set the ephem object up correctly
         # t=for the current time
         sun.compute(self._mObs)
         alt = self._parse_dms(sun.alt)
@@ -51,14 +51,41 @@ class SZA_Calc:
         
     def getSolarRad(self, inDateTime = None):
                    
-        return sin(radians(self.getAlt(inDateTime))) * 1177.8 - 97.753
+        if (inDateTime == None):
+            dateTimeStr = t.strftime('%Y/%m/%d %H:%M:%S', t.gmtime())
+        else:
+            dateTimeStr = inDateTime
+        
+        return sin(radians(self.getAlt(dateTimeStr))) * 1177.8 - 97.753
+
+    def getSunRiseSet(self, inDate = None):
+        ''' 
+        Returns the sunrise and sunset times in local time.
+        Arguements:
+            inDate: UTC date for which sunrise/sunset times are required. 
+                    If None then returns times for today.
+        '''
+
+        if (inDate == None):
+            dateStr = t.strftime('%Y/%m/%d', t.gmtime())
+
+        utcSunrise = self._mObs.previous_rising(eph.Sun(), dateStr).datetime()
+        utcSunset = self._mObs.next_setting(eph.Sun(), dateStr).datetime()
+
+        localSunrise = utcSunrise + timedelta(hours=10)
+        localSunset = utcSunset + timedelta(hours=10)
+
+        localSunriseStr = localSunrise.strftime('%H:%M:%S')
+        localSunsetStr = localSunset.strftime('%H:%M:%S')
+
+        return localSunriseStr, localSunsetStr
             
         
     def _dms2dd(self, degrees, minutes, seconds):
         
-        dd = float(degrees) + float(minutes)/60 + float(seconds)/(60*60);
+        dd = float(degrees) + float(minutes)/60 + float(seconds)/(60*60)
         
-        return dd;
+        return dd
         
     def _parse_dms(self, dms):
         
