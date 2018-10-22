@@ -61,7 +61,7 @@ class SZA_Calc:
     def getSunRiseSet(self, inDate = None):
         ''' 
         Returns the sunrise and sunset times in local time.
-        Arguements:
+        Arguments:
             inDate: UTC date for which sunrise/sunset times are required. 
                     If None then returns times for today.
         '''
