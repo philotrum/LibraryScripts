@@ -1,6 +1,6 @@
 #!user/bin/env python
 
-import ephem as eph
+import pysolar as sol
 import time as t
 from datetime import timedelta
 from math import sin, radians
@@ -10,10 +10,9 @@ class SZA_Calc:
     def __init__(self, inLat, inLong, inEle, inTimezone=0):
         
         # Instantiate the ephem object to allow sza calculations for the sun.
-        self._mObs = eph.Observer()
-        self._mObs.lon = str(inLong)
-        self._mObs.lat = str(inLat)
-        self._mObs.elevation = inEle
+        self._mLon = str(inLong)
+        self._mLat = str(inLat)
+        self._mEle = inEle
         self._mTimezone = inTimezone
     
     def getSZA(self, inDateTime = None):
@@ -23,15 +22,15 @@ class SZA_Calc:
         else:
             timeStr = inDateTime - timedelta(hours=self._mTimezone)
         
-        self._mObs.date = timeStr
-        sun = eph.Sun()
-        # Call this to set the ephem object up correclty
-        # t=for the current time
-        sun.compute(self._mObs)
-        alt = self._parse_dms(sun.alt)
-        sza = 90 - alt
+        # self._mObs.date = timeStr
+        # sun = eph.Sun()
+        # # Call this to set the ephem object up correclty
+        # # t=for the current time
+        # sun.compute(self._mObs)
+        # alt = self._parse_dms(sun.alt)
+        # sza = 90 - alt
         
-        return sza
+        #return sza
         
     def getAlt(self, inDateTime = None):
         
@@ -40,14 +39,14 @@ class SZA_Calc:
         else:
             timeStr = inDateTime
         
-        self._mObs.date = timeStr
-        sun = eph.Sun()
-        # Call this to set the ephem object up correctly
-        # t=for the current time
-        sun.compute(self._mObs)
-        alt = self._parse_dms(sun.alt)
+        date = timeStr
+        # sun = eph.Sun()
+        # # Call this to set the ephem object up correctly
+        # # t=for the current time
+        # sun.compute(self._mObs)
+        # alt = self._parse_dms(sun.alt)
         
-        return alt
+        #return alt
         
     def getSolarRad(self, inDateTime = None):
                    
@@ -69,16 +68,16 @@ class SZA_Calc:
         if (inDate == None):
             dateStr = t.strftime('%Y/%m/%d', t.gmtime())
 
-        utcSunrise = self._mObs.previous_rising(eph.Sun(), dateStr).datetime()
-        utcSunset = self._mObs.next_setting(eph.Sun(), dateStr).datetime()
+        # utcSunrise = self._mObs.previous_rising(eph.Sun(), dateStr).datetime()
+        # utcSunset = self._mObs.next_setting(eph.Sun(), dateStr).datetime()
 
-        localSunrise = utcSunrise + timedelta(hours=self._mTimezone)
-        localSunset = utcSunset + timedelta(hours=self._mTimezone)
+        # localSunrise = utcSunrise + timedelta(hours=self._mTimezone)
+        # localSunset = utcSunset + timedelta(hours=self._mTimezone)
 
-        localSunriseStr = localSunrise.strftime('%H:%M:%S')
-        localSunsetStr = localSunset.strftime('%H:%M:%S')
+        # localSunriseStr = localSunrise.strftime('%H:%M:%S')
+        # localSunsetStr = localSunset.strftime('%H:%M:%S')
 
-        return localSunriseStr, localSunsetStr
+        #return localSunriseStr, localSunsetStr
             
         
     def _dms2dd(self, degrees, minutes, seconds):

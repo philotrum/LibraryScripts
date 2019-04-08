@@ -67,7 +67,7 @@ def CalculateDeltaTime(inDates, inDates2 = None):
     return deltaTime
 
 def LoadData(inData, index):
-    """ Load a column of data from the tuple data set from a databes into a list.
+    """ Load a column of data from the tuple data set from a database into a list.
         You need to pass in the index of the column, 0 based.
         Returns a list with column of a data in it. """
 
