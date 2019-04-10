@@ -9,11 +9,12 @@ class SZA_Calc:
     
     def __init__(self, inLat, inLong, inEle, inTimezone=0):
         
-        # Instantiate the ephem object to allow sza calculations for the sun.
+        # Initialise memeber variables
         self._mLon = str(inLong)
         self._mLat = str(inLat)
         self._mEle = inEle
         self._mTimezone = inTimezone
+
     
     def getSZA(self, inDateTime = None):
     
@@ -22,15 +23,9 @@ class SZA_Calc:
         else:
             timeStr = inDateTime - timedelta(hours=self._mTimezone)
         
-        # self._mObs.date = timeStr
-        # sun = eph.Sun()
-        # # Call this to set the ephem object up correclty
-        # # t=for the current time
-        # sun.compute(self._mObs)
-        # alt = self._parse_dms(sun.alt)
-        # sza = 90 - alt
         
-        #return sza
+        
+        return sza
         
     def getAlt(self, inDateTime = None):
         
