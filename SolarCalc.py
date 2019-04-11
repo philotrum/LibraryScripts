@@ -9,9 +9,9 @@ import logging
 
 class Solar_Calc:
     
-    def __init__(self, inLocName: str='', inCountyName:str='', 
+    def __init__(self, inLocName: str='', inTimezone:str='', inCountyName:str='', 
                     inLat:float=0.0, inLong:float=0.0, 
-                    inEle:float=0.0, inTimezone:str=''):
+                    inEle:float=0.0):
         '''
         This class calculates solar zenith angle, solar altitude, solar
         radiation and sunrise and sunset for the location passed in.
@@ -53,7 +53,7 @@ class Solar_Calc:
         
         # Set the location
         try:
-            self._mAstral[inLocName]
+            self._mLocation = self._mAstral[inLocName]
         except:
             self._mLocation = Location(info=(inLocName, inCountyName, 
                                   inLat, inLong, inTimezone,
@@ -96,13 +96,12 @@ class Solar_Calc:
             inDate: Local date for which sunrise/sunset times are required. 
                     If None then returns times for today.
         '''
+
         if (inDateTime == None):
-            datetime = dt.datetime.now(tz=self._mTime)
+            datetime = dt.datetime.now(self._mTimezone)
         else:
             datetime = inDateTime
 
+        ret = self._mLocation.sun(date=datetime)
 
-        #return localSunriseStr, localSunsetStr
-            
-        
-
+        return ret['sunrise'], ret['sunset']
