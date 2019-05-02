@@ -31,8 +31,8 @@ class Solar_Calc:
             inLong:         Longitude of the location. If the location is in
                             the list of locations in Astral this argument 
                             can be omitted.
-            inEle:          Elevation of the loaction in metres. If the location is in
-                            the list of locations in Astral this argument 
+            inEle:          Elevation of the loaction in metres. If the location
+                            is in the list of locations in Astral this argument 
                             can be omitted.
             inTimezone:     The timezone of the location. This must be 
                             in the format recognised by timezone objects as
@@ -85,8 +85,7 @@ class Solar_Calc:
             datetime = inDateTime
 
         alt = self.getAlt(datetime)
-        print('Alt: ' + str(alt))
-
+        
         return sin(radians(alt)) * 1177.8 - 97.753
 
     def getSunRiseSet(self, inDateTime = None):

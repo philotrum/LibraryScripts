@@ -19,7 +19,7 @@ class configFileParseCLS():
             self._mFilenameSet = True
             
         self._mFileLoaded = False
-            
+
     @property
     def configFileName(self):
         
@@ -29,7 +29,7 @@ class configFileParseCLS():
     @configFileName.setter
     def configFileName(self, inName):
         
-        self._mFullConfigFileName = os.path.join(self._mBasepath, self._mConfigFileName)
+        self._mConfigFileName = inName
         self._mFilenameSet = True
         
     @property
