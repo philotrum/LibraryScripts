@@ -6,13 +6,18 @@
 # what I need, and imports a very large amount of unrequired code.
 
 import os
+import logging
 
 class configFileParseCLS():
     
     def __init__(self, inConfigFileName = ''):
         
+        
+        self._mLogger = logging.getLogger(__name__)
+        
         self._mSettings = []
         self._mConfigFileName = inConfigFileName
+        self._mLogger.debug('Filename: ' + self._mConfigFileName)
         if (self._mConfigFileName == ''):
             self._mFilenameSet = False
         else:
@@ -95,9 +100,9 @@ class configFileParseCLS():
         # Find the setting
         for obj in self._mSettings:
             if (inKey == obj.key):
-                if (obj.val == 'True'):
+                if (bool(obj.val) == True):
                     return True
-                elif (obj.val == 'False'):
+                elif (obj.val == False):
                     return False
                 else:
                     assert(False)
@@ -108,6 +113,7 @@ class configFileParseCLS():
         
         assert(self._mFilenameSet)
         
+        self._mLogger.debug('Filename: ' + self._mConfigFileName)
         lines = [line.rstrip('\n') for line in open(self._mConfigFileName)]     
         for line in lines:
             tmp = line.split(',')
