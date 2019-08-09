@@ -10,8 +10,7 @@ import logging
 
 class configFileParseCLS():
     
-    def __init__(self, inConfigFileName = ''):
-        
+    def __init__(self, inConfigFileName = ''):        
         
         self._mLogger = logging.getLogger(__name__)
         
@@ -51,9 +50,10 @@ class configFileParseCLS():
         
         tmpSetting = _settingCLS(inKey, inVal)
         
-        # Check if setting already exists. Thow assertion if it does.
+        # Check if setting already exists. Throw assertion if it does.
         for obj in self._mSettings:
             if (obj.key == tmpSetting.key):
+                self._mLogger.error('Tried to add key that already exists: ' + inKey)
                 assert(False)
             
         # The key is unique, so it is ok to append it.
@@ -66,6 +66,7 @@ class configFileParseCLS():
                 obj.val = inVal
                 return
         
+        self._mLogger.error('Tried to update non-existent key: ' + inKey)
         assert(False)
     
     def getIntVal(self, inKey):
@@ -73,8 +74,13 @@ class configFileParseCLS():
         # Find the setting
         for obj in self._mSettings:
             if (inKey == obj.key):
-                return int(obj.val)
+                try:
+                    return int(obj.val)
+                except:
+                    self._mLogger.error('Couldn\'t cast the value to an integer: Value = ' + str(obj.val))
+                    assert(False)
                 
+        self._mLogger.error('Tried to retrieve non-existent setting: ' + inKey)
         assert(False)
                 
     def getFloatVal(self, inKey):
@@ -82,8 +88,13 @@ class configFileParseCLS():
         # Find the setting
         for obj in self._mSettings:
             if (inKey == obj.key):
-                return float(obj.val)
+                try:
+                    return float(obj.val)
+                except:
+                    self._mLogger.error('Couldn\'t cast the value to a float: Value = ' + str(obj.val))
+                    assert(False)
                 
+        self._mLogger.error('Tried to get non-existent float key: ' + inKey)
         assert False
                 
     def getStringVal(self, inKey):
@@ -93,6 +104,7 @@ class configFileParseCLS():
             if (inKey == obj.key):
                 return str(obj.val)
                 
+        self._mLogger.error('Tried to get non-existent string key: ' + inKey)
         assert(False)
                 
     def getBoolVal(self, inKey):
@@ -100,18 +112,22 @@ class configFileParseCLS():
         # Find the setting
         for obj in self._mSettings:
             if (inKey == obj.key):
-                if (bool(obj.val) == True):
+                if (obj.val == True or obj.val == 'True'):
                     return True
-                elif (obj.val == False):
+                elif (obj.val == False or obj.val == 'False'):
                     return False
                 else:
+                    self._mLogger.error('Couln\'t cast the value to a bool: Value = ' + str(obj.val))
                     assert(False)
 
+        self._mLogger.error('Tried to get non-existent bool key: ' + inKey)
         assert(False)
     
     def readFile(self):
         
-        assert(self._mFilenameSet)
+        if (self._mFilenameSet == False):
+            self._mLogger('Tried to read a config file without setting the filename.')
+            assert(False)
         
         self._mLogger.debug('Filename: ' + self._mConfigFileName)
         lines = [line.rstrip('\n') for line in open(self._mConfigFileName)]     
@@ -124,7 +140,9 @@ class configFileParseCLS():
         
     def writeFile(self):
         
-        assert(self._mFilenameSet)
+        if (self._mFilenameSet == False):
+            self._mLogger('Tried to write the config file without setting the filename.')
+            assert(False)
         
         outs = open(self._mConfigFileName, 'w')
         for obj in self._mSettings:
