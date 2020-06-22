@@ -129,7 +129,7 @@ class configFileParseCLS():
             self._mLogger('Tried to read a config file without setting the filename.')
             assert(False)
         
-        self._mLogger.debug('Filename: ' + self._mConfigFileName)
+        #self._mLogger.debug('Filename: ' + self._mConfigFileName)
         lines = [line.rstrip('\n') for line in open(self._mConfigFileName)]     
         for line in lines:
             tmp = line.split(',')
