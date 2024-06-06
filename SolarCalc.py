@@ -1,17 +1,18 @@
 #!user/bin/env python
 
-from astral import Astral, Location
-from pytz import timezone
-import pytz
+from astral import LocationInfo, Observer
+from astral.sun import sun, sunrise, sunset, zenith, elevation
 import datetime as dt
 from math import sin, radians
 import logging
+from pytz import timezone
+from pytz.exceptions import UnknownTimeZoneError
 
 class Solar_Calc:
     
-    def __init__(self, inLocName: str='', inTimezone:str='', inCountyName:str='', 
+    def __init__(self, inLocName: str='', inCountryName:str='', inTimezone_tz:str='',
                     inLat:float=0.0, inLong:float=0.0, 
-                    inEle:float=0.0):
+                    inEle:float=0.0, inTZ:float=0.0):
         '''
         This class calculates solar zenith angle, solar altitude, solar
         radiation and sunrise and sunset for the location passed in.
@@ -22,6 +23,9 @@ class Solar_Calc:
                             a location in the list of locations provided
                             in Astral, or it can be a new location not in
                             the list.
+            inTimezone_tz:  The timezone of the location. This must be 
+                            in the format recognised by timezone objects as
+                            provided by pytz.  
             inCountryName:  The name of the county the location. Again, it
                             can be from the list of locations provided in
                             Astral, or it can be a new location not listed.
@@ -31,33 +35,28 @@ class Solar_Calc:
             inLong:         Longitude of the location. If the location is in
                             the list of locations in Astral this argument 
                             can be omitted.
-            inEle:          Elevation of the loaction in metres. If the location
+            inEle:          Elevation of the location in metres. If the location
                             is in the list of locations in Astral this argument 
                             can be omitted.
-            inTimezone:     The timezone of the location. This must be 
-                            in the format recognised by timezone objects as
-                            provided by pytz.         
+            inTZ:           Timezone offest in hours       
         '''
 
          # Set up logger
         self._mLogger = logging.getLogger(__name__)
+        self._mLogger.debug('Entering __init__')
 
         # Initialise memeber variables
-        self._mAstral = Astral()
-        self._mAstral.solar_depression = 'civil'
         self._mLon = inLong
         self._mLat = inLat
         self._mEle = inEle
-        self._mLogger.debug('Timezone_tz: ' + inTimezone)
-        self._mTimezone = timezone(inTimezone)
-        
-        # Set the location
         try:
-            self._mLocation = self._mAstral[inLocName]
-        except:
-            self._mLocation = Location(info=(inLocName, inCountyName, 
-                                  inLat, inLong, inTimezone,
-                                  inEle))
+            self._mTimezone = timezone(inTimezone_tz)
+        except UnknownTimeZoneError:
+            self._mLogger.error('Unknown timezone_tz value in the configuration file')
+                
+        # Set the location
+        self._mCity = LocationInfo(name=inLocName, region=inCountryName, timezone=inTimezone_tz, latitude=inLat, longitude=inLong)
+        self._mObserver = Observer(latitude=self._mLat, longitude=self._mLon, elevation=self._mEle)
             
     def getSZA(self, inDateTime = None):
 
@@ -65,8 +64,14 @@ class Solar_Calc:
             datetime = dt.datetime.now(self._mTimezone)  
         else:
             datetime = inDateTime
-    
-        return self._mAstral.solar_zenith(datetime, self._mLat, self._mLon)
+
+        try:
+            sza = zenith(observer=self._mCity.observer)
+            self._mLogger.debug('Retrieved SZA')
+        except:
+            self._mLogger.error('Failed to retrieve SZA from the Astral package')
+
+        return sza
         
     def getAlt(self, inDateTime = None):
         
@@ -74,8 +79,14 @@ class Solar_Calc:
             datetime = dt.datetime.now(self._mTimezone)
         else:
             datetime = inDateTime
-                
-        return self._mAstral.solar_elevation(datetime, self._mLat, self._mLon )
+        
+        try:
+            altitude = elevation(observer=self._mObserver, dateandtime=datetime)
+            self._mLogger.debug('Retrieved solar elevation.')
+        except:
+            self._mLogger.error('Failed to retrieve solar elevation from the Astral package')
+
+        return altitude
         
     def getSolarRad(self, inDateTime = None):
                    
@@ -101,6 +112,15 @@ class Solar_Calc:
         else:
             datetime = inDateTime
 
-        ret = self._mLocation.sun(date=datetime)
+        try:
+            sunriseLocal = sunrise(observer=self._mObserver, date=datetime, tzinfo=self._mCity.timezone)
+            self._mLogger.debug('Sunrise: ' + sunriseLocal.strftime('%H:%M:%S'))
+        except:
+            self._mLogger.error('Failed to retrieve sunrise time from Astral')
+        try:
+            sunsetLocal = sunset(observer=self._mObserver, date=datetime, tzinfo=self._mCity.timezone)
+            self._mLogger.debug('Sunset: ' + sunsetLocal.strftime('%H:%M:%S'))
+        except:
+            self._mLogger.error('Failed to retrieve sunset time from Astral')
 
-        return ret['sunrise'], ret['sunset']
+        return sunriseLocal, sunsetLocal
